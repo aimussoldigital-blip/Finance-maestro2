@@ -1,4 +1,4 @@
-# Welcome to your Lovable project
+# Finance Maestro
 
 ## Project info
 
