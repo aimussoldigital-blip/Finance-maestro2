@@ -1,0 +1,169 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Finance App Design System - Light & Dark Theme */
+/* All colors MUST be HSL */
+
+@layer base {
+  :root {
+    /* Light mode - Minimalist Blue/Purple/Green */
+    --background: 220 30% 98%;
+    --foreground: 230 30% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 230 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 230 30% 15%;
+
+    --primary: 260 70% 55%;
+    /* Purple */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 30% 96%;
+    --secondary-foreground: 230 30% 15%;
+
+    --muted: 210 30% 96%;
+    --muted-foreground: 220 15% 50%;
+
+    --accent: 180 60% 45%;
+    /* Teal/Green */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 150 60% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 40 90% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 220 20% 92%;
+    --input: 220 20% 92%;
+    --ring: 260 70% 55%;
+
+    --radius: 0.75rem;
+
+    --chart-income: 150 60% 45%;
+    --chart-expense: 340 70% 60%;
+    --chart-saving: 200 80% 50%;
+    --chart-investment: 190 80% 50%;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 230 30% 15%;
+    --sidebar-primary: 260 70% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 30% 96%;
+    --sidebar-accent-foreground: 230 30% 15%;
+    --sidebar-border: 220 20% 92%;
+    --sidebar-ring: 260 70% 55%;
+  }
+
+  .dark {
+    /* Dark mode - Deep Blue/Purple/Green */
+    --background: 230 25% 8%;
+    --foreground: 220 30% 98%;
+
+    --card: 230 25% 12%;
+    --card-foreground: 220 30% 98%;
+
+    --popover: 230 25% 12%;
+    --popover-foreground: 220 30% 98%;
+
+    --primary: 260 90% 65%;
+    /* Vivd Purple */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 230 20% 16%;
+    --secondary-foreground: 220 30% 98%;
+
+    --muted: 230 20% 16%;
+    --muted-foreground: 220 20% 65%;
+
+    --accent: 170 80% 60%;
+    /* Bright Turquoise */
+    --accent-foreground: 230 25% 10%;
+
+    --destructive: 350 80% 65%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 150 70% 50%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 45 90% 60%;
+    --warning-foreground: 0 0% 0%;
+
+    --border: 230 25% 18%;
+    --input: 230 25% 16%;
+    --ring: 260 90% 65%;
+
+    --chart-income: 150 70% 50%;
+    --chart-expense: 340 80% 65%;
+    --chart-saving: 200 90% 60%;
+    --chart-investment: 190 80% 60%;
+
+    --sidebar-background: 230 25% 10%;
+    --sidebar-foreground: 220 30% 98%;
+    --sidebar-primary: 260 90% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 230 20% 16%;
+    --sidebar-accent-foreground: 220 30% 98%;
+    --sidebar-border: 230 25% 18%;
+    --sidebar-ring: 260 90% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-card/80 backdrop-blur-lg;
+  }
+
+  .glow-primary {
+    box-shadow: 0 0 20px -5px hsl(var(--primary) / 0.4);
+  }
+
+  .gradient-primary {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(173 58% 32%) 100%);
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+
+  /* Safe area for mobile */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
