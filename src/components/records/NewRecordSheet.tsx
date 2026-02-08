@@ -28,7 +28,7 @@ const NewRecordSheet = ({ open, onOpenChange }: NewRecordSheetProps) => {
   const [date, setDate] = useState<Date>(new Date());
   const [isCreateCategoryOpen, setIsCreateCategoryOpen] = useState(false);
   const [isVoiceOpen, setIsVoiceOpen] = useState(false);
-  
+
   const { categories, isLoading: categoriesLoading } = useCategories(activeTab);
   const { createMovement } = useMovements();
 
@@ -90,51 +90,53 @@ const NewRecordSheet = ({ open, onOpenChange }: NewRecordSheetProps) => {
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="max-h-[90vh] rounded-t-3xl px-5 pb-8 mx-auto max-w-md">
-          <SheetHeader className="pb-6 pt-2">
+        <SheetContent side="bottom" className="max-h-[90vh] rounded-t-3xl px-0 pb-0 mx-auto max-w-md flex flex-col">
+          <SheetHeader className="pb-4 pt-4 px-5 shrink-0">
             <SheetTitle className="text-xl font-bold text-left">
               Nuevo Registro
             </SheetTitle>
           </SheetHeader>
 
-          <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-5">
-            <TabsList className="grid w-full grid-cols-3 h-12 rounded-full p-1 bg-muted/30">
-              <TabsTrigger 
-                value="expense" 
-                className={cn(
-                  "rounded-full text-sm font-medium transition-all",
-                  activeTab === 'expense' 
-                    ? "bg-[#E05A5A] text-white" 
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Gasto
-              </TabsTrigger>
-              <TabsTrigger 
-                value="income" 
-                className={cn(
-                  "rounded-full text-sm font-medium transition-all",
-                  activeTab === 'income' 
-                    ? "bg-[#6EE7B7] text-black ring-2 ring-[#6EE7B7] ring-offset-2 ring-offset-background" 
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Ingreso
-              </TabsTrigger>
-              <TabsTrigger 
-                value="saving" 
-                className={cn(
-                  "rounded-full text-sm font-medium transition-all",
-                  activeTab === 'saving' 
-                    ? "bg-[#60A5FA] text-white ring-2 ring-[#60A5FA] ring-offset-2 ring-offset-background" 
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Ahorro
-              </TabsTrigger>
-            </TabsList>
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="flex-1 flex flex-col min-h-0">
+            <div className="px-5 shrink-0">
+              <TabsList className="grid w-full grid-cols-3 h-12 rounded-full p-1 bg-muted/30">
+                <TabsTrigger
+                  value="expense"
+                  className={cn(
+                    "rounded-full text-sm font-medium transition-all",
+                    activeTab === 'expense'
+                      ? "bg-[#E05A5A] text-white"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Gasto
+                </TabsTrigger>
+                <TabsTrigger
+                  value="income"
+                  className={cn(
+                    "rounded-full text-sm font-medium transition-all",
+                    activeTab === 'income'
+                      ? "bg-[#6EE7B7] text-black ring-2 ring-[#6EE7B7] ring-offset-2 ring-offset-background"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Ingreso
+                </TabsTrigger>
+                <TabsTrigger
+                  value="saving"
+                  className={cn(
+                    "rounded-full text-sm font-medium transition-all",
+                    activeTab === 'saving'
+                      ? "bg-[#60A5FA] text-white ring-2 ring-[#60A5FA] ring-offset-2 ring-offset-background"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Ahorro
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
-            <div className="space-y-5">
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
               {(['expense', 'income', 'saving'] as CategoryType[]).map((type) => (
                 <TabsContent key={type} value={type} className="mt-0">
                   {/* 1. Selecciona categoría */}
@@ -213,15 +215,17 @@ const NewRecordSheet = ({ open, onOpenChange }: NewRecordSheetProps) => {
                   </PopoverContent>
                 </Popover>
               </div>
+              {/* Add extra padding at bottom to ensure content isn't hidden behind button if scrolled to bottom */}
+              <div className="h-4"></div>
             </div>
 
-            {/* Save Button */}
-            <div className="pt-4">
+            {/* Save Button - Sticky Footer */}
+            <div className="p-5 pt-2 mt-auto border-t">
               <Button
                 onClick={handleSave}
                 disabled={!isValid || createMovement.isPending}
                 className={cn(
-                  'w-full h-14 text-base font-semibold rounded-2xl text-white',
+                  'w-full h-14 text-base font-semibold rounded-2xl text-white shadow-lg shadow-black/5',
                   colors.button
                 )}
               >

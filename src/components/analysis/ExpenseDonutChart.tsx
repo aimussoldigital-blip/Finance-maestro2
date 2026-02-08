@@ -11,7 +11,7 @@ interface ExpenseDonutChartProps {
 const ExpenseDonutChart = ({ data, totalExpense, isLoading }: ExpenseDonutChartProps) => {
   if (isLoading) {
     return (
-      <Card className="border-border/50">
+      <Card className="border-border">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg">Gastos por Categoría</CardTitle>
         </CardHeader>
@@ -24,7 +24,7 @@ const ExpenseDonutChart = ({ data, totalExpense, isLoading }: ExpenseDonutChartP
 
   if (data.length === 0) {
     return (
-      <Card className="border-border/50">
+      <Card className="border-border">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg">Gastos por Categoría</CardTitle>
         </CardHeader>
@@ -91,7 +91,7 @@ const ExpenseDonutChart = ({ data, totalExpense, isLoading }: ExpenseDonutChartP
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} />
-            <Legend 
+            <Legend
               layout="horizontal"
               align="center"
               verticalAlign="bottom"

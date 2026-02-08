@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { format, subMonths, addMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, PiggyBank, TrendingUp as InvestIcon, ArrowUpRight, ArrowDownRight, Eye, EyeOff } from 'lucide-react';
+import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, PiggyBank, TrendingUp as InvestIcon, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Pencil } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -14,8 +15,11 @@ import CategoryIcon from '@/components/ui/CategoryIcon';
 import { useAccounts } from '@/hooks/useAccounts';
 import { useMonthlyStats } from '@/hooks/useMonthlyStats';
 import { cn } from '@/lib/utils';
+import { Movement } from '@/hooks/useMovements';
+import EditMovementDialog from '@/components/records/EditMovementDialog';
 
 const Index = () => {
+  const navigate = useNavigate();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [showBalance, setShowBalance] = useState(true);
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -25,6 +29,8 @@ const Index = () => {
   const { totalBalance } = useAccounts();
   const { displayName } = useProfile();
   const { investedThisMonth } = useMonthlyStats();
+  const [editingMovement, setEditingMovement] = useState<Movement | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const netWorth = totalBalance + totalSaved + totalInvestments;
 
@@ -66,6 +72,11 @@ const Index = () => {
       setCurrentMonth(selectedDate);
       setCalendarOpen(false);
     }
+  };
+
+  const handleEditMovement = (movement: Movement) => {
+    setEditingMovement(movement);
+    setIsEditDialogOpen(true);
   };
 
   const expensesByCategory = byCategory.filter(c => c.type === 'expense').sort((a, b) => b.total - a.total);
@@ -176,7 +187,7 @@ const Index = () => {
       {/* Summary Cards Grid */}
       <div className="grid grid-cols-2 gap-3">
         {/* Ingresos */}
-        <Card className="border-border/50 bg-card">
+        <Card className="border-border bg-card">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-muted-foreground uppercase tracking-wide">Ingresos</span>
@@ -192,7 +203,7 @@ const Index = () => {
         </Card>
 
         {/* Gastos */}
-        <Card className="border-border/50 bg-card">
+        <Card className="border-border bg-card">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-muted-foreground uppercase tracking-wide">Gastos</span>
@@ -208,7 +219,7 @@ const Index = () => {
         </Card>
 
         {/* Ahorro Total */}
-        <Card className="border-border/50 bg-card">
+        <Card className="border-border bg-card">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-muted-foreground uppercase tracking-wide">Ahorro Total</span>
@@ -227,7 +238,7 @@ const Index = () => {
         </Card>
 
         {/* Inversiones */}
-        <Card className="border-border/50 bg-card">
+        <Card className="border-border bg-card">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-muted-foreground uppercase tracking-wide">Inversiones</span>
@@ -248,7 +259,16 @@ const Index = () => {
 
       {/* Últimos movimientos */}
       <div className="space-y-3">
-        <h3 className="font-semibold text-lg">Últimos movimientos</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-lg">Últimos movimientos</h3>
+          <Button
+            variant="link"
+            className="text-sm font-medium h-auto p-0 text-primary"
+            onClick={() => navigate('/movements')}
+          >
+            Ver todos
+          </Button>
+        </div>
         {movements.length === 0 ? (
           <Card className="border-border/50">
             <CardContent className="p-6">
@@ -258,35 +278,56 @@ const Index = () => {
         ) : (
           <div className="space-y-2">
             {movements.slice(0, 5).map((m) => (
-              <Card key={m.id} className="border-border/50">
+              <Card
+                key={m.id}
+                className="border-border cursor-pointer hover:bg-muted/50 transition-colors active:scale-[0.98]"
+                onClick={() => handleEditMovement(m)}
+              >
                 <CardContent className="p-3 md:p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center"
-                        style={{ backgroundColor: `${m.categories?.color}20` }}
+                        className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0"
+                        style={{ backgroundColor: `${m.categories?.color || '#888888'}20` }}
                       >
                         <CategoryIcon
                           icon={m.categories?.icon || 'circle'}
-                          color={m.categories?.color}
+                          color={m.categories?.color || '#888888'}
                           size="sm"
                         />
                       </div>
-                      <div>
-                        <p className="font-medium text-sm md:text-base">
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm md:text-base truncate">
                           {m.concept || m.categories?.name || 'Sin categoría'}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {format(new Date(m.date), 'd MMM', { locale: es })}
+                          {(() => {
+                            const d = new Date(m.date);
+                            return isNaN(d.getTime()) ? 'Fecha inválida' : format(d, 'd MMM', { locale: es });
+                          })()}
                         </p>
                       </div>
                     </div>
-                    <span className={cn(
-                      'font-semibold text-sm md:text-base',
-                      m.type === 'income' ? 'text-primary' : m.type === 'expense' ? 'text-destructive' : 'text-chart-saving'
-                    )}>
-                      {m.type === 'income' ? '+' : '-'}{formatCurrency(Number(m.amount))}
-                    </span>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className={cn(
+                        'font-bold text-sm md:text-base whitespace-nowrap',
+                        m.type === 'income' ? 'text-primary' : m.type === 'expense' ? 'text-destructive' : 'text-chart-saving'
+                      )}>
+                        {m.type === 'income' ? '+' : '-'}{formatCurrency(Number(m.amount))}
+                      </span>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="h-8 px-2 md:px-3 text-muted-foreground hover:text-foreground z-10"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditMovement(m);
+                        }}
+                      >
+                        <Pencil className="h-3 w-3 md:mr-1.5" />
+                        <span className="hidden md:inline text-xs">Editar</span>
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -296,7 +337,7 @@ const Index = () => {
 
       {/* Gastos por Categoría */}
       {expensesByCategory.length > 0 && (
-        <Card className="border-border/50 shadow-sm overflow-hidden mb-8">
+        <Card className="border-border shadow-sm overflow-hidden mb-8">
           <CardContent className="p-6">
             <h3 className="font-bold text-lg mb-6">
               Gastos por Categoría
@@ -321,7 +362,7 @@ const Index = () => {
                         {formatCurrency(item.total)}
                       </span>
                     </div>
-                    <div className="h-2 w-full bg-secondary/20 rounded-full overflow-hidden">
+                    <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full"
                         style={{
@@ -337,6 +378,11 @@ const Index = () => {
           </CardContent>
         </Card>
       )}
+      <EditMovementDialog
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        movement={editingMovement}
+      />
     </div>
   );
 };

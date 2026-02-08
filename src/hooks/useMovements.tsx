@@ -44,7 +44,7 @@ export const useMovements = (month?: Date) => {
     queryKey: ['movements', user?.id, month?.toISOString()],
     queryFn: async () => {
       if (!user) return [];
-      
+
       let query = supabase
         .from('movements')
         .select(`
@@ -54,7 +54,7 @@ export const useMovements = (month?: Date) => {
         .eq('user_id', user.id)
         .order('date', { ascending: false })
         .order('created_at', { ascending: false });
-      
+
       if (month) {
         const monthStart = startOfMonth(month);
         const monthEnd = endOfMonth(month);
@@ -64,7 +64,7 @@ export const useMovements = (month?: Date) => {
       }
 
       const { data, error } = await query;
-      
+
       if (error) throw error;
       return data as Movement[];
     },
@@ -76,17 +76,17 @@ export const useMovements = (month?: Date) => {
     queryKey: ['goal-contributions-month', user?.id, month?.toISOString()],
     queryFn: async () => {
       if (!user || !month) return [];
-      
+
       const start = startOfMonth(month);
       const end = endOfMonth(month);
-      
+
       const { data, error } = await supabase
         .from('goal_contributions')
         .select('amount, created_at')
         .eq('user_id', user.id)
         .gte('created_at', format(start, 'yyyy-MM-dd'))
         .lte('created_at', format(end, 'yyyy-MM-dd') + 'T23:59:59');
-      
+
       if (error) throw error;
       return data;
     },
@@ -99,17 +99,17 @@ export const useMovements = (month?: Date) => {
     queryKey: ['movements-prev', user?.id, previousMonth?.toISOString()],
     queryFn: async () => {
       if (!user || !previousMonth) return [];
-      
+
       const start = startOfMonth(previousMonth);
       const end = endOfMonth(previousMonth);
-      
+
       const { data, error } = await supabase
         .from('movements')
         .select('type, amount')
         .eq('user_id', user.id)
         .gte('date', format(start, 'yyyy-MM-dd'))
         .lte('date', format(end, 'yyyy-MM-dd'));
-      
+
       if (error) throw error;
       return data as { type: string; amount: number }[];
     },
@@ -121,17 +121,17 @@ export const useMovements = (month?: Date) => {
     queryKey: ['goal-contributions-prev-month', user?.id, previousMonth?.toISOString()],
     queryFn: async () => {
       if (!user || !previousMonth) return [];
-      
+
       const start = startOfMonth(previousMonth);
       const end = endOfMonth(previousMonth);
-      
+
       const { data, error } = await supabase
         .from('goal_contributions')
         .select('amount, created_at')
         .eq('user_id', user.id)
         .gte('created_at', format(start, 'yyyy-MM-dd'))
         .lte('created_at', format(end, 'yyyy-MM-dd') + 'T23:59:59');
-      
+
       if (error) throw error;
       return data;
     },
@@ -141,7 +141,7 @@ export const useMovements = (month?: Date) => {
   const createMovement = useMutation({
     mutationFn: async (movement: MovementInput) => {
       if (!user) throw new Error('No user');
-      
+
       const { data, error } = await supabase
         .from('movements')
         .insert({
@@ -151,7 +151,7 @@ export const useMovements = (month?: Date) => {
         })
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -165,13 +165,40 @@ export const useMovements = (month?: Date) => {
     },
   });
 
+  const updateMovement = useMutation({
+    mutationFn: async ({ id, ...movement }: MovementInput & { id: string }) => {
+      if (!user) throw new Error('No user');
+
+      const { data, error } = await supabase
+        .from('movements')
+        .update({
+          ...movement,
+          origin: movement.origin || 'manual',
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['movements'] });
+      queryClient.invalidateQueries({ queryKey: ['summary'] });
+      toast({ title: '¡Registro actualizado!', description: 'El movimiento se ha actualizado correctamente' });
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    },
+  });
+
   const deleteMovement = useMutation({
     mutationFn: async (movementId: string) => {
       const { error } = await supabase
         .from('movements')
         .delete()
         .eq('id', movementId);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
@@ -188,7 +215,7 @@ export const useMovements = (month?: Date) => {
   const goalSavingsThisMonth = goalContributions
     .filter(c => Number(c.amount) > 0)
     .reduce((sum, c) => sum + Number(c.amount), 0);
-  
+
   const prevGoalSavings = prevGoalContributions
     .filter(c => Number(c.amount) > 0)
     .reduce((sum, c) => sum + Number(c.amount), 0);
@@ -243,6 +270,7 @@ export const useMovements = (month?: Date) => {
     movements,
     isLoading,
     createMovement,
+    updateMovement,
     deleteMovement,
     summary,
     prevSummary,

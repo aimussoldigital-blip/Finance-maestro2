@@ -10,7 +10,7 @@ interface InvestmentChartProps {
 const InvestmentChart = ({ data, isLoading }: InvestmentChartProps) => {
   if (isLoading) {
     return (
-      <Card className="border-border/50">
+      <Card className="border-border">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg">Inversiones</CardTitle>
         </CardHeader>
@@ -25,7 +25,7 @@ const InvestmentChart = ({ data, isLoading }: InvestmentChartProps) => {
 
   if (!hasData) {
     return (
-      <Card className="border-border/50">
+      <Card className="border-border">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg">Inversiones</CardTitle>
         </CardHeader>
@@ -67,43 +67,43 @@ const InvestmentChart = ({ data, isLoading }: InvestmentChartProps) => {
           <AreaChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
             <defs>
               <linearGradient id="colorCumulative" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="hsl(var(--chart-investment))" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="hsl(var(--chart-investment))" stopOpacity={0}/>
+                <stop offset="5%" stopColor="hsl(var(--chart-investment))" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="hsl(var(--chart-investment))" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-            <XAxis 
-              dataKey="month" 
-              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} 
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis
+              dataKey="month"
+              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
               axisLine={{ stroke: 'hsl(var(--border))' }}
             />
-            <YAxis 
+            <YAxis
               tickFormatter={formatCurrency}
-              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} 
+              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
               axisLine={{ stroke: 'hsl(var(--border))' }}
             />
             <Tooltip content={<CustomTooltip />} />
-            <Legend 
+            <Legend
               wrapperStyle={{ paddingTop: '10px' }}
               iconType="circle"
             />
-            <Area 
-              type="monotone" 
-              dataKey="cumulative" 
+            <Area
+              type="monotone"
+              dataKey="cumulative"
               name="Acumulado"
-              stroke="hsl(var(--chart-investment))" 
+              stroke="hsl(var(--chart-investment))"
               fill="url(#colorCumulative)"
               strokeWidth={2}
             />
-            <Area 
-              type="monotone" 
-              dataKey="total" 
+            <Area
+              type="monotone"
+              dataKey="total"
               name="Aporte mensual"
-              stroke="hsl(var(--primary))" 
+              stroke="hsl(var(--primary))"
               fill="url(#colorTotal)"
               strokeWidth={2}
             />

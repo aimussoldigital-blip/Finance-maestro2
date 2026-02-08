@@ -12,6 +12,7 @@ import Goals from "./pages/Goals";
 import Analysis from "./pages/Analysis";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
+import Movements from "./pages/Movements";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="/" element={<AppLayout><Index /></AppLayout>} />
               <Route path="/goals" element={<AppLayout><Goals /></AppLayout>} />
               <Route path="/analysis" element={<AppLayout><Analysis /></AppLayout>} />
+              <Route path="/movements" element={<AppLayout><Movements /></AppLayout>} />
               <Route path="/profile" element={<AppLayout><Profile /></AppLayout>} />
               <Route path="/admin" element={<AppLayout><Admin /></AppLayout>} />
               <Route path="*" element={<NotFound />} />

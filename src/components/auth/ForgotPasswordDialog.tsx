@@ -23,7 +23,7 @@ const ForgotPasswordDialog = ({ children }: ForgotPasswordDialogProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       emailSchema.parse(email);
     } catch (error) {
@@ -38,10 +38,10 @@ const ForgotPasswordDialog = ({ children }: ForgotPasswordDialogProps) => {
     }
 
     setLoading(true);
-    
+
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth?reset=true`,
+        redirectTo: `${window.location.origin}/auth`,
       });
 
       if (error) {
@@ -79,7 +79,7 @@ const ForgotPasswordDialog = ({ children }: ForgotPasswordDialogProps) => {
             Ingresa tu email y te enviaremos un enlace para restablecer tu contraseña.
           </DialogDescription>
         </DialogHeader>
-        
+
         {sent ? (
           <div className="py-6 text-center space-y-4">
             <CheckCircle className="h-12 w-12 mx-auto text-green-500" />

@@ -47,40 +47,47 @@ export const useCategories = (type?: CategoryType) => {
     queryKey: ['categories', user?.id, type],
     queryFn: async (): Promise<Category[]> => {
       if (!user) return [];
-      
+
       let query = supabase
         .from('categories')
         .select('*')
         .eq('user_id', user.id)
         .order('is_default', { ascending: false })
         .order('name');
-      
+
       if (type) {
         query = query.eq('type', type);
       }
 
       const { data, error } = await query;
-      
+
       if (error) throw error;
-      
+
       // If no categories exist, create defaults
       if (data.length === 0) {
         const defaultsToInsert = defaultCategories.map(cat => ({
           ...cat,
           user_id: user.id,
         }));
-        
+
         const { data: inserted, error: insertError } = await supabase
           .from('categories')
           .insert(defaultsToInsert)
           .select();
-        
+
         if (insertError) throw insertError;
-        
+
         return (type ? inserted?.filter(c => c.type === type) : inserted) as Category[];
       }
-      
-      return data as Category[];
+
+      // Deduplicate categories by name to prevent UI duplicates if DB has issues
+      const uniqueCategories = data?.filter((cat, index, self) =>
+        index === self.findIndex((t) => (
+          t.name === cat.name && t.type === cat.type
+        ))
+      ) || [];
+
+      return uniqueCategories as Category[];
     },
     enabled: !!user,
   });
@@ -88,7 +95,7 @@ export const useCategories = (type?: CategoryType) => {
   const createCategory = useMutation({
     mutationFn: async (category: { name: string; type: CategoryType; icon: string; color: string }) => {
       if (!user) throw new Error('No user');
-      
+
       const { data, error } = await supabase
         .from('categories')
         .insert({
@@ -98,7 +105,7 @@ export const useCategories = (type?: CategoryType) => {
         })
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -117,7 +124,7 @@ export const useCategories = (type?: CategoryType) => {
         .from('categories')
         .delete()
         .eq('id', categoryId);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {

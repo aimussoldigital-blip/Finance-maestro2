@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import ForgotPasswordDialog from '@/components/auth/ForgotPasswordDialog';
 import { supabase } from '@/integrations/supabase/client';
+import { useRecoveryMode } from '@/hooks/useRecoveryMode';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string().min(6, 'La contraseña debe tener al menos 6 caracteres');
@@ -28,12 +29,15 @@ const Auth = () => {
   const { toast } = useToast();
 
   // Check if this is a password reset flow
+  const isRecoveryMode = useRecoveryMode();
+
   useEffect(() => {
-    const isReset = searchParams.get('reset') === 'true';
-    if (isReset) {
+    // Also check for the manual reset param as a fallback
+    const isResetParam = searchParams.get('reset') === 'true';
+    if (isRecoveryMode || isResetParam) {
       setIsResettingPassword(true);
     }
-  }, [searchParams]);
+  }, [isRecoveryMode, searchParams]);
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();

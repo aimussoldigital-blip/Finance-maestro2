@@ -10,7 +10,7 @@ interface ExpenseCategoryListProps {
 const ExpenseCategoryList = ({ categories, isLoading }: ExpenseCategoryListProps) => {
     if (isLoading) {
         return (
-            <Card className="border-border/50 h-full">
+            <Card className="border-border h-full">
                 <CardHeader className="pb-4">
                     <CardTitle className="text-lg">Gastos por Categoría</CardTitle>
                 </CardHeader>
@@ -31,7 +31,7 @@ const ExpenseCategoryList = ({ categories, isLoading }: ExpenseCategoryListProps
 
     if (categories.length === 0) {
         return (
-            <Card className="border-border/50 h-full">
+            <Card className="border-border h-full">
                 <CardHeader className="pb-4">
                     <CardTitle className="text-lg">Gastos por Categoría</CardTitle>
                 </CardHeader>
@@ -52,7 +52,7 @@ const ExpenseCategoryList = ({ categories, isLoading }: ExpenseCategoryListProps
     };
 
     return (
-        <Card className="border-border/50 h-full">
+        <Card className="border-border h-full">
             <CardHeader className="pb-4">
                 <CardTitle className="text-lg">Gastos por Categoría</CardTitle>
             </CardHeader>
@@ -76,7 +76,7 @@ const ExpenseCategoryList = ({ categories, isLoading }: ExpenseCategoryListProps
                         </div>
 
                         {/* Custom Progress Bar */}
-                        <div className="relative h-2 w-full bg-secondary/50 rounded-full overflow-hidden">
+                        <div className="relative h-2 w-full bg-secondary rounded-full overflow-hidden">
                             <div
                                 className="absolute top-0 left-0 h-full rounded-full transition-all duration-700 ease-out"
                                 style={{
